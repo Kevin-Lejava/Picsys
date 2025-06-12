@@ -12,6 +12,7 @@ import {
   Select,
   Slider,
   Typography,
+  Chip,
 } from "@mui/material";
 import axios from "axios";
 import { DIPMethodName, DIPParams } from "./Types";
@@ -19,8 +20,10 @@ import { DIPMethodName, DIPParams } from "./Types";
 function App() {
   const [file, setFile] = useState<File | null>(null);
   const [previewSrc, setPreviewSrc] = useState<string | null>(null);
-  const [method, setMethod] = useState<DIPMethodName>("greyscale");
-  const [params, setParams] = useState<DIPParams>({});
+  const [methods, setMethods] = useState<DIPMethodName[]>(["greyscale"]);
+  const [params, setParams] = useState<
+    Partial<Record<DIPMethodName, DIPParams>>
+  >({});
   const [resultSrc, setResultSrc] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -29,29 +32,40 @@ function App() {
       const f = e.target.files[0];
       setFile(f);
       const reader = new FileReader();
-      reader.onload = () => {
-        setPreviewSrc(reader.result as string);
-      };
+      reader.onload = () => setPreviewSrc(reader.result as string);
       reader.readAsDataURL(f);
       setResultSrc(null);
     }
   };
 
-  const handleMethodChange = (e: SelectChangeEvent) => {
-    const m = e.target.value as DIPMethodName;
-    setMethod(m);
-    setParams({});
+  const handleMethodsChange = (e: SelectChangeEvent<typeof methods>) => {
+    const value = e.target.value;
+    const newMethods =
+      typeof value === "string" ? (value.split(",") as DIPMethodName[]) : value;
+    setMethods(newMethods);
+    // Initialize params for new methods
+    setParams((prev) => {
+      const updated: Partial<Record<DIPMethodName, DIPParams>> = {};
+      newMethods.forEach((m) => {
+        updated[m] = prev[m] || {};
+      });
+      return updated;
+    });
     setResultSrc(null);
   };
 
   const handleParamChange = (
+    method: DIPMethodName,
     key: keyof DIPParams,
     value: number | number[]
   ) => {
     const v = Array.isArray(value) ? value[0] : value;
     setParams((prev) => ({
       ...prev,
-      [key]: v,
+      [method]: {
+        ...prev[method],
+        [key]: v,
+      },
     }));
   };
 
@@ -59,24 +73,22 @@ function App() {
     if (!file) return;
     setLoading(true);
     const data = new FormData();
-    data.append("method", method);
-    Object.entries(params).forEach(([k, v]) => {
-      if (v !== undefined && v !== null) {
-        data.append(k, String(v));
-      }
+    data.append("methods", JSON.stringify(methods));
+    methods.forEach((m) => {
+      const mp = params[m] || {};
+      Object.entries(mp).forEach(([k, v]) => {
+        data.append(`${m}_${k}`, String(v));
+      });
     });
     data.append("upload", file);
 
     try {
       const response = await axios.post("http://localhost:8000/process", data, {
         responseType: "arraybuffer",
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+        headers: { "Content-Type": "multipart/form-data" },
       });
       const blob = new Blob([response.data], { type: "image/png" });
-      const url = URL.createObjectURL(blob);
-      setResultSrc(url);
+      setResultSrc(URL.createObjectURL(blob));
     } catch (err) {
       console.error("Processing error:", err);
       alert("Error processing image. See console for details.");
@@ -85,18 +97,19 @@ function App() {
     }
   };
 
-  const renderParamControls = () => {
+  const renderParamControls = (method: DIPMethodName) => {
+    const p = params[method] || {};
     switch (method) {
       case "gamma":
         return (
-          <Box sx={{ my: 2 }}>
-            <Typography gutterBottom>Gamma (0.1 → 5.0)</Typography>
+          <Box sx={{ my: 2 }} key={`${method}-gamma`}>
+            <Typography gutterBottom>{`Gamma (${p.gamma ?? 1.0})`}</Typography>
             <Slider
-              value={params.gamma ?? 1.0}
+              value={p.gamma ?? 1.0}
               min={0.1}
               max={5}
               step={0.1}
-              onChange={(_, v) => handleParamChange("gamma", v)}
+              onChange={(_, v) => handleParamChange(method, "gamma", v)}
               valueLabelDisplay="auto"
             />
           </Box>
@@ -104,14 +117,16 @@ function App() {
 
       case "binary":
         return (
-          <Box sx={{ my: 2 }}>
-            <Typography gutterBottom>Threshold (0 → 255)</Typography>
+          <Box sx={{ my: 2 }} key={`${method}-thresh`}>
+            <Typography gutterBottom>{`Threshold (${
+              p.thresh ?? 127
+            })`}</Typography>
             <Slider
-              value={params.thresh ?? 127}
+              value={p.thresh ?? 127}
               min={0}
               max={255}
               step={1}
-              onChange={(_, v) => handleParamChange("thresh", v)}
+              onChange={(_, v) => handleParamChange(method, "thresh", v)}
               valueLabelDisplay="auto"
             />
           </Box>
@@ -119,30 +134,34 @@ function App() {
 
       case "canny":
         return (
-          <>
+          <Box key={`${method}-canny`}>
             <Box sx={{ my: 2 }}>
-              <Typography gutterBottom>Threshold1 (0 → 255)</Typography>
+              <Typography gutterBottom>{`Threshold1 (${
+                p.threshold1 ?? 100
+              })`}</Typography>
               <Slider
-                value={params.threshold1 ?? 100}
+                value={p.threshold1 ?? 100}
                 min={0}
                 max={255}
                 step={1}
-                onChange={(_, v) => handleParamChange("threshold1", v)}
+                onChange={(_, v) => handleParamChange(method, "threshold1", v)}
                 valueLabelDisplay="auto"
               />
             </Box>
             <Box sx={{ my: 2 }}>
-              <Typography gutterBottom>Threshold2 (0 → 255)</Typography>
+              <Typography gutterBottom>{`Threshold2 (${
+                p.threshold2 ?? 200
+              })`}</Typography>
               <Slider
-                value={params.threshold2 ?? 200}
+                value={p.threshold2 ?? 200}
                 min={0}
                 max={255}
                 step={1}
-                onChange={(_, v) => handleParamChange("threshold2", v)}
+                onChange={(_, v) => handleParamChange(method, "threshold2", v)}
                 valueLabelDisplay="auto"
               />
             </Box>
-          </>
+          </Box>
         );
 
       case "sobel":
@@ -150,11 +169,11 @@ function App() {
           <Box sx={{ my: 2 }}>
             <Typography gutterBottom>Edge Threshold (0 → 255)</Typography>
             <Slider
-              value={params.thresh ?? 100}
+              value={p.thresh ?? 100}
               min={0}
               max={255}
               step={1}
-              onChange={(_, v) => handleParamChange("thresh", v)}
+              onChange={(_, v) => handleParamChange(method, "thresh", v)}
               valueLabelDisplay="auto"
             />
           </Box>
@@ -167,22 +186,22 @@ function App() {
             <Box sx={{ my: 2 }}>
               <Typography gutterBottom>k (–1.0 → 1.0)</Typography>
               <Slider
-                value={params.k ?? 0.2}
+                value={p.k ?? 0.2}
                 min={-1}
                 max={1}
                 step={0.1}
-                onChange={(_, v) => handleParamChange("k", v)}
+                onChange={(_, v) => handleParamChange(method, "k", v)}
                 valueLabelDisplay="auto"
               />
             </Box>
             <Box sx={{ my: 2 }}>
               <Typography gutterBottom>Window Size (odd: 3 → 201)</Typography>
               <Slider
-                value={params.window_size ?? 15}
+                value={p.window_size ?? 15}
                 min={3}
                 max={201}
                 step={2}
-                onChange={(_, v) => handleParamChange("window_size", v)}
+                onChange={(_, v) => handleParamChange(method, "window_size", v)}
                 valueLabelDisplay="auto"
               />
             </Box>
@@ -194,11 +213,11 @@ function App() {
           <Box sx={{ my: 2 }}>
             <Typography gutterBottom>Kernel Size (odd: 1 → 21)</Typography>
             <Slider
-              value={params.kernel_size ?? 5}
+              value={p.kernel_size ?? 5}
               min={1}
               max={21}
               step={2}
-              onChange={(_, v) => handleParamChange("kernel_size", v)}
+              onChange={(_, v) => handleParamChange(method, "kernel_size", v)}
               valueLabelDisplay="auto"
             />
           </Box>
@@ -243,15 +262,23 @@ function App() {
               )}
 
               <Box sx={{ mt: 3 }}>
-                <Typography variant="h6">2. Select Method</Typography>
+                <Typography variant="h6">2. Select Methods</Typography>
                 <InputLabel id="method-label" sx={{ mt: 1 }}>
-                  DIP Method
+                  DIP Methods
                 </InputLabel>
                 <Select
                   labelId="method-label"
-                  value={method}
-                  onChange={handleMethodChange}
+                  multiple
+                  value={methods}
+                  onChange={handleMethodsChange}
                   fullWidth
+                  renderValue={(selected) => (
+                    <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+                      {selected.map((value) => (
+                        <Chip key={value} label={value} />
+                      ))}
+                    </Box>
+                  )}
                 >
                   <MenuItem value="greyscale">Greyscale</MenuItem>
                   <MenuItem value="logarithmic">Logarithmic</MenuItem>
@@ -277,7 +304,8 @@ function App() {
                 </Select>
               </Box>
 
-              {renderParamControls()}
+              {/* Render parameter controls for each selected method */}
+              {methods.map((m) => renderParamControls(m))}
 
               <Button
                 variant="contained"
@@ -298,16 +326,29 @@ function App() {
             <CardContent>
               <Typography variant="h6">Result</Typography>
               {resultSrc ? (
-                <CardMedia
-                  component="img"
-                  src={resultSrc}
-                  alt="Processed Result"
-                  sx={{ maxHeight: 500, objectFit: "contain" }}
-                />
+                <>
+                  <CardMedia
+                    component="img"
+                    src={resultSrc}
+                    alt="Processed Result"
+                    sx={{ maxHeight: 500, objectFit: "contain" }}
+                  />
+                  <Typography sx={{ mt: 2 }}>
+                    Selections:{" "}
+                    {methods
+                      .map((m) => {
+                        const p = params[m] || {};
+                        const paramStr = Object.entries(p)
+                          .map(([k, v]) => `${k} (${v})`)
+                          .join(", ");
+                        return paramStr ? `${m} [${paramStr}]` : m;
+                      })
+                      .join(" + ")}
+                  </Typography>
+                </>
               ) : (
                 <Typography color="text.secondary">
-                  No result yet. Upload an image, select a method, and click
-                  Run.
+                  No result yet. Upload an image, select methods, and click Run.
                 </Typography>
               )}
             </CardContent>
