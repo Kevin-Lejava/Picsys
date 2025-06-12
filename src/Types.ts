@@ -1,5 +1,4 @@
 // src/types.ts
-
 export type DIPMethodName =
   | "greyscale"
   | "logarithmic"
@@ -20,7 +19,6 @@ export type DIPMethodName =
   | "sobel"
   | "niblack"
   | "sauvola";
-// …etc, add all the names from your backend’s DIP_CLASSES
 
 export interface DIPParams {
   gamma?: number;
