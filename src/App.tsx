@@ -43,7 +43,6 @@ function App() {
     const newMethods =
       typeof value === "string" ? (value.split(",") as DIPMethodName[]) : value;
     setMethods(newMethods);
-    // Initialize params for new methods
     setParams((prev) => {
       const updated: Partial<Record<DIPMethodName, DIPParams>> = {};
       newMethods.forEach((m) => {
@@ -281,6 +280,8 @@ function App() {
                   )}
                 >
                   <MenuItem value="greyscale">Greyscale</MenuItem>
+                  <MenuItem value="HSV">HSV Color</MenuItem>
+                  <MenuItem value="HLS">HLS Color</MenuItem>
                   <MenuItem value="logarithmic">Logarithmic</MenuItem>
                   <MenuItem value="exponential">Exponential</MenuItem>
                   <MenuItem value="sqrt">Square Root</MenuItem>
@@ -293,18 +294,30 @@ function App() {
                   <MenuItem value="gaussian_blur">Gaussian Blur</MenuItem>
                   <MenuItem value="clahe">CLAHE</MenuItem>
                   <MenuItem value="sharpen">Sharpen</MenuItem>
+                  <MenuItem value="segment">Segmentation</MenuItem>
+                  <MenuItem value="multisegment">
+                    Multi-level Segmentation
+                  </MenuItem>
                   <MenuItem value="adaptive_thresh">
                     Adaptive Threshold
                   </MenuItem>
                   <MenuItem value="binary">Binary Threshold</MenuItem>
+                  <MenuItem value="open">Open</MenuItem>
+                  <MenuItem value="dilate">Dilate</MenuItem>
+                  <MenuItem value="erode">Erode</MenuItem>
+                  <MenuItem value="morphgradient">
+                    Morphological Gradient
+                  </MenuItem>
                   <MenuItem value="canny">Canny Edge</MenuItem>
                   <MenuItem value="sobel">Sobel Edge</MenuItem>
                   <MenuItem value="niblack">Niblack</MenuItem>
                   <MenuItem value="sauvola">Sauvola</MenuItem>
+                  <MenuItem value="HOG">
+                    Histogram of Oriented Gradients
+                  </MenuItem>
                 </Select>
               </Box>
 
-              {/* Render parameter controls for each selected method */}
               {methods.map((m) => renderParamControls(m))}
 
               <Button

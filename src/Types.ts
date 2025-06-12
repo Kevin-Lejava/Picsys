@@ -1,6 +1,7 @@
-// src/types.ts
 export type DIPMethodName =
   | "greyscale"
+  | "HSV"
+  | "HLS"
   | "logarithmic"
   | "exponential"
   | "sqrt"
@@ -13,12 +14,19 @@ export type DIPMethodName =
   | "gaussian_blur"
   | "clahe"
   | "sharpen"
+  | "segment"
+  | "multisegment"
   | "adaptive_thresh"
   | "binary"
+  | "open"
+  | "dilate"
+  | "erode"
+  | "morphgradient"
   | "canny"
   | "sobel"
   | "niblack"
-  | "sauvola";
+  | "sauvola"
+  | "HOG";
 
 export interface DIPParams {
   gamma?: number;
