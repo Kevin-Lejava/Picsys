@@ -1,4 +1,4 @@
-import React, { useState, ChangeEvent } from "react";
+import React, { useState, useEffect, ChangeEvent } from "react";
 import { SelectChangeEvent } from "@mui/material/Select";
 import {
   Box,
@@ -16,16 +16,22 @@ import {
 } from "@mui/material";
 import axios from "axios";
 import { DIPMethodName, DIPParams } from "./Types";
+import { LineChart } from "@mui/x-charts/LineChart";
 
 function App() {
   const [file, setFile] = useState<File | null>(null);
   const [previewSrc, setPreviewSrc] = useState<string | null>(null);
-  const [methods, setMethods] = useState<DIPMethodName[]>(["greyscale"]);
+  const [methods, setMethods] = useState<DIPMethodName[]>([]);
   const [params, setParams] = useState<
     Partial<Record<DIPMethodName, DIPParams>>
   >({});
   const [resultSrc, setResultSrc] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [histogram, setHistogram] = useState<{
+    r: number[];
+    g: number[];
+    b: number[];
+  } | null>(null);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -95,6 +101,33 @@ function App() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (!resultSrc) return;
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.src = resultSrc;
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+      const imageData = ctx.getImageData(0, 0, img.width, img.height).data;
+
+      const bins = 256;
+      const histR = new Array(bins).fill(0);
+      const histG = new Array(bins).fill(0);
+      const histB = new Array(bins).fill(0);
+      for (let i = 0; i < imageData.length; i += 4) {
+        histR[imageData[i]]++;
+        histG[imageData[i + 1]]++;
+        histB[imageData[i + 2]]++;
+      }
+      setHistogram({ r: histR, g: histG, b: histB });
+    };
+  }, [resultSrc]);
 
   const renderParamControls = (method: DIPMethodName) => {
     const p = params[method] || {};
@@ -232,11 +265,27 @@ function App() {
       <Typography variant="h4" gutterBottom>
         Welcome to Picsys! An experimental picture editing and analysis tool.
       </Typography>
-      <Grid container spacing={4}>
+      <Grid
+        container
+        spacing={4}
+        sx={{
+          justifyContent: "center",
+          alignItems: "flex-start",
+        }}
+      >
         <Grid size={{ xs: 12, md: 4 }}>
           <Card variant="outlined">
             <CardContent>
               <Typography variant="h6">1. Upload Image</Typography>
+
+              {previewSrc && (
+                <CardMedia
+                  component="img"
+                  src={previewSrc}
+                  alt="Original Preview"
+                  sx={{ maxHeight: 500, objectFit: "contain" }}
+                />
+              )}
               <Button
                 variant="contained"
                 component="label"
@@ -251,15 +300,6 @@ function App() {
                   onChange={handleFileChange}
                 />
               </Button>
-              {previewSrc && (
-                <CardMedia
-                  component="img"
-                  src={previewSrc}
-                  alt="Original Preview"
-                  sx={{ mt: 2, maxHeight: 200, objectFit: "contain" }}
-                />
-              )}
-
               <Box sx={{ mt: 3 }}>
                 <Typography variant="h6">2. Select Methods</Typography>
                 <InputLabel id="method-label" sx={{ mt: 1 }}>
@@ -358,6 +398,38 @@ function App() {
                       })
                       .join(" + ")}
                   </Typography>
+
+                  {histogram && (
+                    <Box sx={{ mt: 4 }}>
+                      <Typography variant="h6">Histogram</Typography>
+                      <LineChart
+                        height={300}
+                        series={[
+                          {
+                            data: histogram.r,
+                            label: "Red",
+                            color: "red",
+                          },
+                          {
+                            data: histogram.g,
+                            label: "Green",
+                            color: "green",
+                          },
+                          {
+                            data: histogram.b,
+                            label: "Blue",
+                            color: "blue",
+                          },
+                        ]}
+                        xAxis={[
+                          {
+                            data: Array.from({ length: 256 }, (_, i) => i),
+                            scaleType: "point",
+                          },
+                        ]}
+                      />
+                    </Box>
+                  )}
                 </>
               ) : (
                 <Typography color="text.secondary">
