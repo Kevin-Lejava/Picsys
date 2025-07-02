@@ -20,7 +20,9 @@ import { LineChart } from "@mui/x-charts/LineChart";
 
 function App() {
   const [file, setFile] = useState<File | null>(null);
+  const [file2, setFile2] = useState<File | null>(null);
   const [previewSrc, setPreviewSrc] = useState<string | null>(null);
+  const [previewSrc2, setPreviewSrc2] = useState<string | null>(null);
   const [methods, setMethods] = useState<DIPMethodName[]>([]);
   const [params, setParams] = useState<
     Partial<Record<DIPMethodName, DIPParams>>
@@ -41,6 +43,16 @@ function App() {
       reader.onload = () => setPreviewSrc(reader.result as string);
       reader.readAsDataURL(f);
       setResultSrc(null);
+    }
+  };
+
+  const handleFile2Change = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files?.[0]) {
+      const f2 = e.target.files[0];
+      setFile2(f2);
+      const reader2 = new FileReader();
+      reader2.onload = () => setPreviewSrc2(reader2.result as string);
+      reader2.readAsDataURL(f2);
     }
   };
 
@@ -79,6 +91,15 @@ function App() {
     setLoading(true);
     const data = new FormData();
     data.append("methods", JSON.stringify(methods));
+    if (
+      (methods.includes("add") ||
+        methods.includes("subtract") ||
+        methods.includes("multiply") ||
+        methods.includes("divide")) &&
+      file2
+    ) {
+      data.append("upload2", file2);
+    }
     methods.forEach((m) => {
       const mp = params[m] || {};
       Object.entries(mp).forEach(([k, v]) => {
@@ -300,6 +321,40 @@ function App() {
                   onChange={handleFileChange}
                 />
               </Button>
+
+              {(methods.includes("add") ||
+                methods.includes("subtract") ||
+                methods.includes("multiply") ||
+                methods.includes("divide")) && (
+                <>
+                  <Typography variant="h6" sx={{ mt: 3 }}>
+                    1b. Upload Second Image
+                  </Typography>
+                  {previewSrc2 && (
+                    <CardMedia
+                      component="img"
+                      src={previewSrc2}
+                      alt="Second Preview"
+                      sx={{ maxHeight: 300, objectFit: "contain" }}
+                    />
+                  )}
+                  <Button
+                    variant="outlined"
+                    component="label"
+                    fullWidth
+                    sx={{ mt: 1 }}
+                  >
+                    Choose Second File
+                    <input
+                      type="file"
+                      hidden
+                      accept="image/*"
+                      onChange={handleFile2Change}
+                    />
+                  </Button>
+                </>
+              )}
+
               <Box sx={{ mt: 3 }}>
                 <Typography variant="h6">2. Select Methods</Typography>
                 <InputLabel id="method-label" sx={{ mt: 1 }}>
@@ -355,6 +410,10 @@ function App() {
                   <MenuItem value="HOG">
                     Histogram of Oriented Gradients
                   </MenuItem>
+                  <MenuItem value="add">Addition</MenuItem>
+                  <MenuItem value="subtract">Subtraction</MenuItem>
+                  <MenuItem value="multiply">Multiplication</MenuItem>
+                  <MenuItem value="divide">Division</MenuItem>
                 </Select>
               </Box>
 

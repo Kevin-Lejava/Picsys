@@ -26,7 +26,11 @@ export type DIPMethodName =
   | "sobel"
   | "niblack"
   | "sauvola"
-  | "HOG";
+  | "HOG"
+  | "add"
+  | "subtract"
+  | "multiply"
+  | "divide";
 
 export interface DIPParams {
   gamma?: number;
