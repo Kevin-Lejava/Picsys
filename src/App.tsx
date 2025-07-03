@@ -28,12 +28,19 @@ function App() {
     Partial<Record<DIPMethodName, DIPParams>>
   >({});
   const [resultSrc, setResultSrc] = useState<string | null>(null);
+  const [selection, setSelection] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [histogram, setHistogram] = useState<{
     r: number[];
     g: number[];
     b: number[];
   } | null>(null);
+
+  const handleClearAll = () => {
+    setMethods([]);
+    setParams({});
+    setResultSrc(null);
+  };
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -313,6 +320,18 @@ function App() {
     }
   };
 
+  const filename =
+    methods.length > 0
+      ? methods
+          .map((m) => {
+            const entries = Object.entries(params[m] || {})
+              .map(([k, v]) => `${k}(${v})`)
+              .join(",");
+            return entries ? `${m}[${entries}]` : m;
+          })
+          .join("+") + ".png"
+      : "No Selections.png";
+
   return (
     <Box sx={{ p: 4 }}>
       <Typography variant="h4" gutterBottom>
@@ -389,9 +408,19 @@ function App() {
 
               <Box sx={{ mt: 3 }}>
                 <Typography variant="h6">2. Select Methods</Typography>
-                <InputLabel id="method-label" sx={{ mt: 1 }}>
-                  DIP Methods
-                </InputLabel>
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    mt: 1,
+                  }}
+                >
+                  <InputLabel id="method-label">DIP Methods</InputLabel>
+                  <Button size="small" onClick={handleClearAll}>
+                    Clear All
+                  </Button>
+                </Box>
                 <Select
                   labelId="method-label"
                   multiple
@@ -474,22 +503,31 @@ function App() {
                   <CardMedia
                     component="img"
                     src={resultSrc}
-                    alt="Processed Result"
+                    alt="Processed"
                     sx={{ maxHeight: 500, objectFit: "contain" }}
                   />
-                  <Typography sx={{ mt: 2 }}>
-                    Selections:{" "}
-                    {methods
-                      .map((m) => {
-                        const p = params[m] || {};
-                        const paramStr = Object.entries(p)
-                          .map(([k, v]) => `${k} (${v})`)
-                          .join(", ");
-                        return paramStr ? `${m} [${paramStr}]` : m;
-                      })
-                      .join(" + ")}
-                  </Typography>
+                  <Box sx={{ mt: 2, display: "flex", gap: 2 }}>
+                    <Button
+                      variant="contained"
+                      onClick={handleRun}
+                      disabled={loading}
+                    >
+                      {loading ? "Processing…" : "Re-run"}
+                    </Button>
+                    <Button
+                      variant="outlined"
+                      component="a"
+                      href={resultSrc}
+                      download={filename}
+                      sx={{}}
+                    >
+                      Save Image
+                    </Button>
+                  </Box>
 
+                  <Typography sx={{ mt: 2 }}>
+                    Selections: {filename.replace(".png", "")}
+                  </Typography>
                   {histogram && (
                     <Box sx={{ mt: 4 }}>
                       <Typography variant="h6">Histogram</Typography>
@@ -499,17 +537,17 @@ function App() {
                           {
                             data: histogram.r,
                             label: "Red",
-                            color: "red",
+                            color: "#d62728",
                           },
                           {
                             data: histogram.g,
                             label: "Green",
-                            color: "green",
+                            color: "#2ca02c",
                           },
                           {
                             data: histogram.b,
                             label: "Blue",
-                            color: "blue",
+                            color: "#1f77b4",
                           },
                         ]}
                         xAxis={[
