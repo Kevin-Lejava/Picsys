@@ -1,4 +1,4 @@
-import React, { useState, useEffect, ChangeEvent } from "react";
+import React, { useState, useEffect, ChangeEvent, DragEvent } from "react";
 import { SelectChangeEvent } from "@mui/material/Select";
 import {
   Box,
@@ -28,7 +28,6 @@ function App() {
     Partial<Record<DIPMethodName, DIPParams>>
   >({});
   const [resultSrc, setResultSrc] = useState<string | null>(null);
-  const [selection, setSelection] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [histogram, setHistogram] = useState<{
     r: number[];
@@ -42,26 +41,38 @@ function App() {
     setResultSrc(null);
   };
 
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const f = e.target.files[0];
-      setFile(f);
-      const reader = new FileReader();
-      reader.onload = () => setPreviewSrc(reader.result as string);
-      reader.readAsDataURL(f);
-      setResultSrc(null);
-    }
+  const loadFile = (
+    f: File,
+    set: React.Dispatch<React.SetStateAction<File | null>>,
+    setPrev: React.Dispatch<React.SetStateAction<string | null>>
+  ) => {
+    set(f);
+    const reader = new FileReader();
+    reader.onload = () => setPrev(reader.result as string);
+    reader.readAsDataURL(f);
+    setResultSrc(null);
   };
 
-  const handleFile2Change = (e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files?.[0]) {
-      const f2 = e.target.files[0];
-      setFile2(f2);
-      const reader2 = new FileReader();
-      reader2.onload = () => setPreviewSrc2(reader2.result as string);
-      reader2.readAsDataURL(f2);
-    }
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files?.[0])
+      loadFile(e.target.files[0], setFile, setPreviewSrc);
   };
+  const handleFile2Change = (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files?.[0])
+      loadFile(e.target.files[0], setFile2, setPreviewSrc2);
+  };
+
+  const handleDrop = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    if (e.dataTransfer.files && e.dataTransfer.files[0])
+      loadFile(e.dataTransfer.files[0], setFile, setPreviewSrc);
+  };
+  const handleDrop2 = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    if (e.dataTransfer.files && e.dataTransfer.files[0])
+      loadFile(e.dataTransfer.files[0], setFile2, setPreviewSrc2);
+  };
+  const handleDragOver = (e: DragEvent<HTMLDivElement>) => e.preventDefault();
 
   const handleMethodsChange = (e: SelectChangeEvent<typeof methods>) => {
     const value = e.target.value;
@@ -349,60 +360,71 @@ function App() {
           <Card variant="outlined">
             <CardContent>
               <Typography variant="h6">1. Upload Image</Typography>
-
-              {previewSrc && (
-                <CardMedia
-                  component="img"
-                  src={previewSrc}
-                  alt="Original Preview"
-                  sx={{ maxHeight: 500, objectFit: "contain" }}
-                />
-              )}
-              <Button
-                variant="contained"
-                component="label"
-                fullWidth
-                sx={{ mt: 1 }}
+              <Box
+                sx={{
+                  textAlign: "center",
+                }}
+                onDrop={handleDrop}
+                onDragOver={handleDragOver}
               >
-                Choose File
-                <input
-                  type="file"
-                  hidden
-                  accept="image/*"
-                  onChange={handleFileChange}
-                />
-              </Button>
+                {previewSrc ? (
+                  <CardMedia
+                    component="img"
+                    src={previewSrc}
+                    alt="Preview"
+                    sx={{ maxHeight: 300, objectFit: "contain" }}
+                  />
+                ) : (
+                  <Typography>
+                    Drag & Drop or{" "}
+                    <Button component="label">
+                      Browse
+                      <input
+                        type="file"
+                        hidden
+                        accept="image/*"
+                        onChange={handleFileChange}
+                      />
+                    </Button>
+                  </Typography>
+                )}
+              </Box>
 
               {(methods.includes("add") ||
                 methods.includes("subtract") ||
                 methods.includes("multiply") ||
                 methods.includes("divide")) && (
                 <>
-                  <Typography variant="h6" sx={{ mt: 3 }}>
-                    1b. Upload Second Image
-                  </Typography>
-                  {previewSrc2 && (
-                    <CardMedia
-                      component="img"
-                      src={previewSrc2}
-                      alt="Second Preview"
-                      sx={{ maxHeight: 300, objectFit: "contain" }}
-                    />
-                  )}
-                  <Button
-                    variant="outlined"
-                    component="label"
-                    fullWidth
-                    sx={{ mt: 1 }}
+                  <Typography variant="h6">1b. Upload Second Image</Typography>
+                  <Box
+                    sx={{
+                      textAlign: "center",
+                    }}
+                    onDrop={handleDrop2}
+                    onDragOver={handleDragOver}
                   >
-                    Choose Second File
-                    <input
-                      type="file"
-                      hidden
-                      accept="image/*"
-                      onChange={handleFile2Change}
-                    />
-                  </Button>
+                    {previewSrc2 ? (
+                      <CardMedia
+                        component="img"
+                        src={previewSrc2}
+                        alt="Preview 2"
+                        sx={{ maxHeight: 300, objectFit: "contain" }}
+                      />
+                    ) : (
+                      <Typography>
+                        Drag & Drop or{" "}
+                        <Button component="label">
+                          Browse
+                          <input
+                            type="file"
+                            hidden
+                            accept="image/*"
+                            onChange={handleFile2Change}
+                          />
+                        </Button>
+                      </Typography>
+                    )}
+                  </Box>
                 </>
               )}
 
