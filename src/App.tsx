@@ -171,7 +171,7 @@ function App() {
       case "binary":
         return (
           <Box sx={{ my: 2 }} key={`${method}-thresh`}>
-            <Typography gutterBottom>{`Threshold (${
+            <Typography gutterBottom>{`Binary Threshold (${
               p.thresh ?? 127
             })`}</Typography>
             <Slider
@@ -189,7 +189,7 @@ function App() {
         return (
           <Box key={`${method}-canny`}>
             <Box sx={{ my: 2 }}>
-              <Typography gutterBottom>{`Threshold1 (${
+              <Typography gutterBottom>{`Canny Threshold1 (${
                 p.threshold1 ?? 100
               })`}</Typography>
               <Slider
@@ -202,7 +202,7 @@ function App() {
               />
             </Box>
             <Box sx={{ my: 2 }}>
-              <Typography gutterBottom>{`Threshold2 (${
+              <Typography gutterBottom>{`Canny Threshold2 (${
                 p.threshold2 ?? 200
               })`}</Typography>
               <Slider
@@ -220,7 +220,9 @@ function App() {
       case "sobel":
         return (
           <Box sx={{ my: 2 }}>
-            <Typography gutterBottom>Edge Threshold (0 → 255)</Typography>
+            <Typography gutterBottom>{`Sobel Threshold (${
+              p.thresh ?? 100
+            })`}</Typography>
             <Slider
               value={p.thresh ?? 100}
               min={0}
@@ -233,11 +235,10 @@ function App() {
         );
 
       case "niblack":
-      case "sauvola":
         return (
           <>
             <Box sx={{ my: 2 }}>
-              <Typography gutterBottom>k (–1.0 → 1.0)</Typography>
+              <Typography gutterBottom>Niblack k (–1.0 → 1.0)</Typography>
               <Slider
                 value={p.k ?? 0.2}
                 min={-1}
@@ -248,7 +249,38 @@ function App() {
               />
             </Box>
             <Box sx={{ my: 2 }}>
-              <Typography gutterBottom>Window Size (odd: 3 → 201)</Typography>
+              <Typography gutterBottom>
+                Niblack Window Size (odd: 3 → 201)
+              </Typography>
+              <Slider
+                value={p.window_size ?? 15}
+                min={3}
+                max={201}
+                step={2}
+                onChange={(_, v) => handleParamChange(method, "window_size", v)}
+                valueLabelDisplay="auto"
+              />
+            </Box>
+          </>
+        );
+      case "sauvola":
+        return (
+          <>
+            <Box sx={{ my: 2 }}>
+              <Typography gutterBottom>Sauvola k (–1.0 → 1.0)</Typography>
+              <Slider
+                value={p.k ?? 0.2}
+                min={-1}
+                max={1}
+                step={0.1}
+                onChange={(_, v) => handleParamChange(method, "k", v)}
+                valueLabelDisplay="auto"
+              />
+            </Box>
+            <Box sx={{ my: 2 }}>
+              <Typography gutterBottom>
+                Sauvola Window Size (odd: 3 → 201)
+              </Typography>
               <Slider
                 value={p.window_size ?? 15}
                 min={3}
@@ -264,7 +296,7 @@ function App() {
       case "gaussian_blur":
         return (
           <Box sx={{ my: 2 }}>
-            <Typography gutterBottom>Kernel Size (odd: 1 → 21)</Typography>
+            <Typography gutterBottom>Blur Kernel Size (odd: 1 → 21)</Typography>
             <Slider
               value={p.kernel_size ?? 5}
               min={1}
@@ -403,8 +435,8 @@ function App() {
                   <MenuItem value="morphgradient">
                     Morphological Gradient
                   </MenuItem>
-                  <MenuItem value="canny">Canny Edge</MenuItem>
-                  <MenuItem value="sobel">Sobel Edge</MenuItem>
+                  <MenuItem value="canny">Canny Edge Detection</MenuItem>
+                  <MenuItem value="sobel">Sobel Edge Detection</MenuItem>
                   <MenuItem value="niblack">Niblack</MenuItem>
                   <MenuItem value="sauvola">Sauvola</MenuItem>
                   <MenuItem value="HOG">
