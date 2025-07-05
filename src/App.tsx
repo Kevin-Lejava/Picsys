@@ -113,7 +113,10 @@ function App() {
       (methods.includes("add") ||
         methods.includes("subtract") ||
         methods.includes("multiply") ||
-        methods.includes("divide")) &&
+        methods.includes("divide") ||
+        methods.includes("LIPadd") ||
+        methods.includes("LIPsubtract") ||
+        methods.includes("LIPdivide")) &&
       file2
     ) {
       data.append("upload2", file2);
@@ -325,7 +328,20 @@ function App() {
             />
           </Box>
         );
-
+      case "LIPmultiply":
+        return (
+          <Box sx={{ my: 2 }} key={`${method}-LIPmultiply`}>
+            <Typography gutterBottom>{`Constant (${p.c ?? 1.0})`}</Typography>
+            <Slider
+              value={p.c ?? 1.0}
+              min={0.1}
+              max={3.0}
+              step={0.1}
+              onChange={(_, v) => handleParamChange(method, "c", v)}
+              valueLabelDisplay="auto"
+            />
+          </Box>
+        );
       default:
         return null;
     }
@@ -393,7 +409,10 @@ function App() {
               {(methods.includes("add") ||
                 methods.includes("subtract") ||
                 methods.includes("multiply") ||
-                methods.includes("divide")) && (
+                methods.includes("divide") ||
+                methods.includes("LIPadd") ||
+                methods.includes("LIPsubtract") ||
+                methods.includes("LIPdivide")) && (
                 <>
                   <Typography variant="h6">1b. Upload Second Image</Typography>
                   <Box
@@ -497,6 +516,14 @@ function App() {
                   <MenuItem value="subtract">Subtraction</MenuItem>
                   <MenuItem value="multiply">Multiplication</MenuItem>
                   <MenuItem value="divide">Division</MenuItem>
+                  <MenuItem value="LIPadd">Logarithmic Addition</MenuItem>
+                  <MenuItem value="LIPsubtract">
+                    Logarithmic Subtraction
+                  </MenuItem>
+                  <MenuItem value="LIPmultiply">
+                    Logarithmic Scalar Multiplication
+                  </MenuItem>
+                  <MenuItem value="LIPdivide">Logarithmic Division</MenuItem>
                 </Select>
               </Box>
 

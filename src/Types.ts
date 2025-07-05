@@ -30,7 +30,11 @@ export type DIPMethodName =
   | "add"
   | "subtract"
   | "multiply"
-  | "divide";
+  | "divide"
+  | "LIPadd"
+  | "LIPsubtract"
+  | "LIPmultiply"
+  | "LIPdivide";
 
 export interface DIPParams {
   gamma?: number;
@@ -40,4 +44,5 @@ export interface DIPParams {
   k?: number;
   window_size?: number;
   kernel_size?: number;
+  c?: number;
 }
