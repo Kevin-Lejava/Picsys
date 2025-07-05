@@ -130,10 +130,14 @@ function App() {
     data.append("upload", file);
 
     try {
-      const response = await axios.post("http://localhost:8000/process", data, {
-        responseType: "arraybuffer",
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const response = await axios.post(
+        "http://picsys.vercel.app/api/process",
+        data,
+        {
+          responseType: "arraybuffer",
+          headers: { "Content-Type": "multipart/form-data" },
+        }
+      );
       const blob = new Blob([response.data], { type: "image/png" });
       setResultSrc(URL.createObjectURL(blob));
     } catch (err) {
