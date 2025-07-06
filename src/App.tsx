@@ -504,7 +504,7 @@ function App() {
                     </Box>
                   )}
                 >
-                  <MenuItem value="greyscale">Greyscale</MenuItem>
+                  <MenuItem value="greyscale">Grayscale</MenuItem>
                   <MenuItem value="HSV">HSV Color</MenuItem>
                   <MenuItem value="HLS">HLS Color</MenuItem>
                   <MenuItem value="logarithmic">Logarithmic</MenuItem>
