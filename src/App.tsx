@@ -142,7 +142,7 @@ function App() {
       setResultSrc(URL.createObjectURL(blob));
     } catch (err) {
       console.error("Processing error:", err);
-      alert("Error processing image. See console for details.");
+      alert("Error processing image");
     } finally {
       setLoading(false);
     }
