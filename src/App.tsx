@@ -408,6 +408,18 @@ function App() {
                     </Button>
                   </Typography>
                 )}
+                <Typography>
+                  Drag & Drop or{" "}
+                  <Button component="label">
+                    Browse
+                    <input
+                      type="file"
+                      hidden
+                      accept="image/*"
+                      onChange={handleFileChange}
+                    />
+                  </Button>
+                </Typography>
               </Box>
 
               {(methods.includes("add") ||
@@ -447,6 +459,18 @@ function App() {
                         </Button>
                       </Typography>
                     )}
+                    <Typography>
+                      Drag & Drop or{" "}
+                      <Button component="label">
+                        Browse
+                        <input
+                          type="file"
+                          hidden
+                          accept="image/*"
+                          onChange={handleFile2Change}
+                        />
+                      </Button>
+                    </Typography>
                   </Box>
                 </>
               )}
