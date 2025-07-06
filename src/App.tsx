@@ -131,7 +131,7 @@ function App() {
 
     try {
       const response = await axios.post(
-        "http://picsys.vercel.app/api/process",
+        "https://picsys-backend.onrender.com/process",
         data,
         {
           responseType: "arraybuffer",
