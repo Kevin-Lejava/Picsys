@@ -408,18 +408,6 @@ function App() {
                     </Button>
                   </Typography>
                 )}
-                <Typography>
-                  Drag & Drop or{" "}
-                  <Button component="label">
-                    Browse
-                    <input
-                      type="file"
-                      hidden
-                      accept="image/*"
-                      onChange={handleFileChange}
-                    />
-                  </Button>
-                </Typography>
               </Box>
 
               {(methods.includes("add") ||
@@ -459,18 +447,6 @@ function App() {
                         </Button>
                       </Typography>
                     )}
-                    <Typography>
-                      Drag & Drop or{" "}
-                      <Button component="label">
-                        Browse
-                        <input
-                          type="file"
-                          hidden
-                          accept="image/*"
-                          onChange={handleFile2Change}
-                        />
-                      </Button>
-                    </Typography>
                   </Box>
                 </>
               )}
@@ -504,7 +480,7 @@ function App() {
                     </Box>
                   )}
                 >
-                  <MenuItem value="greyscale">Grayscale</MenuItem>
+                  <MenuItem value="greyscale">Greyscale</MenuItem>
                   <MenuItem value="HSV">HSV Color</MenuItem>
                   <MenuItem value="HLS">HLS Color</MenuItem>
                   <MenuItem value="logarithmic">Logarithmic</MenuItem>
