@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/Picsys/static/css/main.e6c13ad2.css",
+    "main.js": "/Picsys/static/js/main.aa816113.js",
+    "index.html": "/Picsys/index.html",
+    "main.e6c13ad2.css.map": "/Picsys/static/css/main.e6c13ad2.css.map",
+    "main.aa816113.js.map": "/Picsys/static/js/main.aa816113.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.e6c13ad2.css",
+    "static/js/main.aa816113.js"
+  ]
+}
