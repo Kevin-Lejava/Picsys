@@ -401,7 +401,7 @@ function App() {
             <Box sx={{ my: 2 }}>
               <Typography gutterBottom>Amplitude</Typography>
               <Slider
-                value={p.amp ?? 1}
+                value={p.amp ?? 128}
                 min={1}
                 max={255}
                 step={1}
@@ -412,22 +412,22 @@ function App() {
             <Box sx={{ my: 2 }}>
               <Typography gutterBottom>Linear Blending</Typography>
               <Slider
-                value={p.NLEalpha ?? 0.1}
+                value={p.NLEAlpha ?? 0.1}
                 min={0.1}
                 max={1.0}
                 step={0.1}
-                onChange={(_, v) => handleParamChange(method, "NLEalpha", v)}
+                onChange={(_, v) => handleParamChange(method, "NLEAlpha", v)}
                 valueLabelDisplay="auto"
               />
             </Box>
             <Box sx={{ my: 2 }}>
               <Typography gutterBottom>Gain</Typography>
               <Slider
-                value={p.NLEbeta ?? 1.0}
+                value={p.NLEBeta ?? 1.0}
                 min={0.1}
                 max={2.0}
                 step={0.1}
-                onChange={(_, v) => handleParamChange(method, "NLEbeta", v)}
+                onChange={(_, v) => handleParamChange(method, "NLEBeta", v)}
                 valueLabelDisplay="auto"
               />
             </Box>

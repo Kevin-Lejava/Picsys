@@ -53,8 +53,8 @@ export interface DIPParams {
   M?:number;
   enhance?: number;
   amp?: number;
-  NLEalpha?: number;
-  NLEbeta?: number;
+  NLEAlpha?: number;
+  NLEBeta?: number;
   dhvtPlane?: number;
   logralpha?: number;
   logrbeta?: number;
