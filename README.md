@@ -48,3 +48,7 @@ To learn React, check out the [React documentation](https://reactjs.org/).
 ### `uvicorn main:app --reload --port 8000`
 
 starts the FastAPI python script in the backend portion of the project.
+
+### `npm run deploy`
+
+Deploys build to gh-pages
