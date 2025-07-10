@@ -1,5 +1,5 @@
 export type DIPMethodName =
-  | "greyscale"
+  | "grayscale"
   | "HSV"
   | "HLS"
   | "logarithmic"
@@ -34,7 +34,12 @@ export type DIPMethodName =
   | "LIPadd"
   | "LIPsubtract"
   | "LIPmultiply"
-  | "LIPdivide";
+  | "LIPdivide"
+  | "LIPscaleMult"
+  | "NLE"
+  | "DHVT"
+  | "LOGReduction"
+  | "LIPBiHistEq";
 
 export interface DIPParams {
   gamma?: number;
@@ -44,5 +49,14 @@ export interface DIPParams {
   k?: number;
   window_size?: number;
   kernel_size?: number;
-  c?: number;
+  const?: number;
+  M?:number;
+  enhance?: number;
+  amp?: number;
+  NLEalpha?: number;
+  NLEbeta?: number;
+  dhvtPlane?: number;
+  logralpha?: number;
+  logrbeta?: number;
+  logrlam?: number;
 }

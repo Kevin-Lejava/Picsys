@@ -116,6 +116,7 @@ function App() {
         methods.includes("divide") ||
         methods.includes("LIPadd") ||
         methods.includes("LIPsubtract") ||
+        methods.includes("LIPmultiply") ||
         methods.includes("LIPdivide")) &&
       file2
     ) {
@@ -197,10 +198,10 @@ function App() {
         return (
           <Box sx={{ my: 2 }} key={`${method}-thresh`}>
             <Typography gutterBottom>{`Binary Threshold (${
-              p.thresh ?? 127
+              p.thresh ?? 128
             })`}</Typography>
             <Slider
-              value={p.thresh ?? 127}
+              value={p.thresh ?? 128}
               min={0}
               max={255}
               step={1}
@@ -246,10 +247,10 @@ function App() {
         return (
           <Box sx={{ my: 2 }}>
             <Typography gutterBottom>{`Sobel Threshold (${
-              p.thresh ?? 100
+              p.thresh ?? 128
             })`}</Typography>
             <Slider
-              value={p.thresh ?? 100}
+              value={p.thresh ?? 128}
               min={0}
               max={255}
               step={1}
@@ -332,20 +333,179 @@ function App() {
             />
           </Box>
         );
-      case "LIPmultiply":
+
+      case "LIPsubtract":
         return (
-          <Box sx={{ my: 2 }} key={`${method}-LIPmultiply`}>
-            <Typography gutterBottom>{`Constant (${p.c ?? 1.0})`}</Typography>
+          <Box sx={{ my: 2 }} key={`${method}-LIPsubtract`}>
+            <Typography gutterBottom>{`Max Value of Range (${
+              p.M ?? 1.0
+            })`}</Typography>
             <Slider
-              value={p.c ?? 1.0}
-              min={0.1}
-              max={3.0}
-              step={0.1}
-              onChange={(_, v) => handleParamChange(method, "c", v)}
+              value={p.M ?? 1.0}
+              min={0}
+              max={255}
+              step={1}
+              onChange={(_, v) => handleParamChange(method, "M", v)}
               valueLabelDisplay="auto"
             />
           </Box>
         );
+      case "LIPmultiply":
+        return (
+          <Box sx={{ my: 2 }} key={`${method}-LIPmultiply`}>
+            <Typography gutterBottom>{`Max Value of Range (${
+              p.M ?? 1.0
+            })`}</Typography>
+            <Slider
+              value={p.M ?? 1.0}
+              min={0}
+              max={4104}
+              step={1}
+              onChange={(_, v) => handleParamChange(method, "M", v)}
+              valueLabelDisplay="auto"
+            />
+          </Box>
+        );
+
+      case "LIPscaleMult":
+        return (
+          <Box sx={{ my: 2 }} key={`${method}-LIPscaleMult`}>
+            <Typography gutterBottom>{`Constant (${
+              p.const ?? 1.0
+            })`}</Typography>
+            <Slider
+              value={p.const ?? 1.0}
+              min={0.1}
+              max={3.0}
+              step={0.1}
+              onChange={(_, v) => handleParamChange(method, "const", v)}
+              valueLabelDisplay="auto"
+            />
+          </Box>
+        );
+
+      case "NLE":
+        return (
+          <>
+            <Box sx={{ my: 2 }}>
+              <Typography gutterBottom>Enhancement</Typography>
+              <Slider
+                value={p.enhance ?? 128}
+                min={0}
+                max={255}
+                step={1}
+                onChange={(_, v) => handleParamChange(method, "enhance", v)}
+                valueLabelDisplay="auto"
+              />
+            </Box>
+            <Box sx={{ my: 2 }}>
+              <Typography gutterBottom>Amplitude</Typography>
+              <Slider
+                value={p.amp ?? 1}
+                min={1}
+                max={255}
+                step={1}
+                onChange={(_, v) => handleParamChange(method, "amp", v)}
+                valueLabelDisplay="auto"
+              />
+            </Box>
+            <Box sx={{ my: 2 }}>
+              <Typography gutterBottom>Linear Blending</Typography>
+              <Slider
+                value={p.NLEalpha ?? 0.1}
+                min={0.1}
+                max={1.0}
+                step={0.1}
+                onChange={(_, v) => handleParamChange(method, "NLEalpha", v)}
+                valueLabelDisplay="auto"
+              />
+            </Box>
+            <Box sx={{ my: 2 }}>
+              <Typography gutterBottom>Gain</Typography>
+              <Slider
+                value={p.NLEbeta ?? 1.0}
+                min={0.1}
+                max={2.0}
+                step={0.1}
+                onChange={(_, v) => handleParamChange(method, "NLEbeta", v)}
+                valueLabelDisplay="auto"
+              />
+            </Box>
+          </>
+        );
+
+      case "DHVT":
+        return (
+          <>
+            <Box sx={{ my: 2 }}>
+              <Typography gutterBottom>DHVT Plane</Typography>
+              <Slider
+                value={p.dhvtPlane ?? 0.1}
+                min={1}
+                max={4}
+                step={1}
+                onChange={(_, v) => handleParamChange(method, "dhvtPlane", v)}
+                valueLabelDisplay="auto"
+              />
+            </Box>
+          </>
+        );
+
+      case "LOGReduction":
+        return (
+          <>
+            <Box sx={{ my: 2 }}>
+              <Typography gutterBottom>Alpha</Typography>
+              <Slider
+                value={p.logralpha ?? 0.1}
+                min={0}
+                max={0.9}
+                step={0.1}
+                onChange={(_, v) => handleParamChange(method, "logralpha", v)}
+                valueLabelDisplay="auto"
+              />
+            </Box>
+            <Box sx={{ my: 2 }}>
+              <Typography gutterBottom>Beta</Typography>
+              <Slider
+                value={p.logrbeta ?? 0.1}
+                min={0.1}
+                max={0.9}
+                step={0.1}
+                onChange={(_, v) => handleParamChange(method, "logrbeta", v)}
+                valueLabelDisplay="auto"
+              />
+            </Box>
+            <Box sx={{ my: 2 }}>
+              <Typography gutterBottom>Lambda</Typography>
+              <Slider
+                value={p.logrlam ?? 0.1}
+                min={0}
+                max={0.9}
+                step={0.1}
+                onChange={(_, v) => handleParamChange(method, "logrlam", v)}
+                valueLabelDisplay="auto"
+              />
+            </Box>
+          </>
+        );
+      case "LIPBiHistEq":
+        return (
+          <Box sx={{ my: 2 }} key={`${method}-thresh`}>
+            <Typography gutterBottom>{`Bi-Histogram Equalization Threshold (${
+              p.thresh ?? 128
+            })`}</Typography>
+            <Slider
+              value={p.thresh ?? 128}
+              min={0}
+              max={255}
+              step={1}
+              onChange={(_, v) => handleParamChange(method, "thresh", v)}
+              valueLabelDisplay="auto"
+            />
+          </Box>
+        );
+
       default:
         return null;
     }
@@ -416,6 +576,7 @@ function App() {
                 methods.includes("divide") ||
                 methods.includes("LIPadd") ||
                 methods.includes("LIPsubtract") ||
+                methods.includes("LIPmultiply") ||
                 methods.includes("LIPdivide")) && (
                 <>
                   <Typography variant="h6">1b. Upload Second Image</Typography>
@@ -480,7 +641,7 @@ function App() {
                     </Box>
                   )}
                 >
-                  <MenuItem value="greyscale">Greyscale</MenuItem>
+                  <MenuItem value="grayscale">Grayscale</MenuItem>
                   <MenuItem value="HSV">HSV Color</MenuItem>
                   <MenuItem value="HLS">HLS Color</MenuItem>
                   <MenuItem value="logarithmic">Logarithmic</MenuItem>
@@ -525,9 +686,22 @@ function App() {
                     Logarithmic Subtraction
                   </MenuItem>
                   <MenuItem value="LIPmultiply">
-                    Logarithmic Scalar Multiplication
+                    Logarithmic Multiplication
                   </MenuItem>
                   <MenuItem value="LIPdivide">Logarithmic Division</MenuItem>
+                  <MenuItem value="LIPscaleMult">
+                    Logarithmic Scalar Multiplication
+                  </MenuItem>
+                  <MenuItem value="NLE">Non-Linear Edge Enhancement</MenuItem>
+                  <MenuItem value="DHVT">
+                    Dynamic Human Vision Thresholding
+                  </MenuItem>
+                  <MenuItem value="LOGReduction">
+                    Logarithmic Reduction
+                  </MenuItem>
+                  <MenuItem value="LIPBiHistEq">
+                    Logarithmic Bi-Histogram Equalization
+                  </MenuItem>
                 </Select>
               </Box>
 
