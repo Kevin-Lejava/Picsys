@@ -116,8 +116,7 @@ function App() {
         methods.includes("divide") ||
         methods.includes("LIPadd") ||
         methods.includes("LIPsubtract") ||
-        methods.includes("LIPmultiply") ||
-        methods.includes("LIPdivide")) &&
+        methods.includes("LIPmultiply")) &&
       file2
     ) {
       data.append("upload2", file2);
@@ -576,8 +575,7 @@ function App() {
                 methods.includes("divide") ||
                 methods.includes("LIPadd") ||
                 methods.includes("LIPsubtract") ||
-                methods.includes("LIPmultiply") ||
-                methods.includes("LIPdivide")) && (
+                methods.includes("LIPmultiply")) && (
                 <>
                   <Typography variant="h6">1b. Upload Second Image</Typography>
                   <Box
@@ -688,7 +686,6 @@ function App() {
                   <MenuItem value="LIPmultiply">
                     Logarithmic Multiplication
                   </MenuItem>
-                  <MenuItem value="LIPdivide">Logarithmic Division</MenuItem>
                   <MenuItem value="LIPscaleMult">
                     Logarithmic Scalar Multiplication
                   </MenuItem>

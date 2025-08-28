@@ -34,7 +34,6 @@ export type DIPMethodName =
   | "LIPadd"
   | "LIPsubtract"
   | "LIPmultiply"
-  | "LIPdivide"
   | "LIPscaleMult"
   | "NLE"
   | "DHVT"
